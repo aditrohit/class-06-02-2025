@@ -27,7 +27,8 @@ edu_wa <- get_acs(
   survey = "acs5",
   variables = c(percent_bach_or_higher = "DP02_0067P"),
   geometry = TRUE,
-  progress_bar = FALSE
+  progress_bar = FALSE,
+  quiet = TRUE
 )
 
 # Rename estimate for easier use
