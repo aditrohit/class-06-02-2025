@@ -1,0 +1,57 @@
+---
+title: "Washington Education"
+format: html
+execute:
+    echo: false
+    warning: false
+    message: false
+---
+
+
+```{r}
+
+library(tidycensus)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+
+#| message: false
+#| warning: false
+#| echo: false
+# Load education data for Washington state (all counties)
+edu_wa <- get_acs(
+  geography = "tract",
+  state = "WA",
+  county = NULL,
+  year = 2022,
+  survey = "acs5",
+  variables = c(percent_bach_or_higher = "DP02_0067P"),
+  geometry = TRUE
+)
+
+# Rename estimate for easier use
+edu_wa <- edu_wa %>%
+  rename(percent_bach_or_higher = estimate)
+
+# Plot the map for Washington
+ggplot(edu_wa) +
+  geom_sf(aes(fill = percent_bach_or_higher), color = NA) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    direction = -1,
+    name = "% with Bachelor's+",
+    na.value = "grey80"
+  ) +
+  labs(
+    title = "Bachelor’s Degree or Higher (%), Washington Census Tracts (2022)",
+    subtitle = "Source: U.S. Census Bureau, 2022 ACS 5-Year Estimates",
+    caption = "tidycensus R package",
+    x = NULL, y = NULL
+  ) +
+  theme_minimal()
+
+```
+
+The map visualizes the percentage of adults aged 25 and older in Washington state who have attained a bachelor’s degree or higher, broken down by census tract. Each tract is colored according to the proportion of residents with a college degree, with warmer colors indicating higher educational attainment. This spatial representation highlights significant regional variations in educational levels across the state, reflecting differences in economic development, urbanization, and access to educational institutions.
+
+Notably, areas around major urban centers such as Seattle and Bellevue show higher concentrations of residents with bachelor’s degrees, likely due to the presence of tech industries, universities, and greater employment opportunities requiring advanced education. In contrast, many rural and less densely populated tracts tend to have lower percentages, revealing persistent educational disparities. This map provides valuable insight for policymakers, educators, and community planners aiming to address educational equity and foster workforce development throughout Washington.

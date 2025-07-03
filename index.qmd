@@ -1,7 +1,75 @@
 ---
-title: "Los Angeles Education"
+title: "California Education"
+execute:
+    echo: false
 ---
 
-This is a Quarto website.
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+# Load required libraries
+library(tidycensus)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+
+# Use cached TIGER/Line boundaries for faster loads
+options(tigris_use_cache = TRUE)
+
+# Load education data for ALL of California (state = "CA", county = NULL)
+edu_ca <- get_acs(
+  geography = "tract",
+  state = "CA",
+  county = NULL,  # all counties
+  year = 2022,
+  survey = "acs5",
+  variables = c(percent_bach_or_higher = "DP02_0067P"),
+  geometry = TRUE
+)
+
+# Rename estimate for easier use
+edu_ca <- edu_ca %>%
+  rename(percent_bach_or_higher = estimate)
+
+# Plot the map
+ggplot(edu_ca) +
+  geom_sf(aes(fill = percent_bach_or_higher), color = NA) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    direction = -1,
+    name = "% with Bachelor's+",
+    na.value = "grey80"
+  ) +
+  labs(
+    title = "Bachelor’s Degree or Higher (%), California Census Tracts (2022)",
+    subtitle = "Source: U.S. Census Bureau, 2022 ACS 5-Year Estimates",
+    caption = "tidycensus R package",
+    x = NULL, y = NULL
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(edu_ca, aes(x = percent_bach_or_higher)) +
+  geom_density(fill = "#4E79A7", alpha = 0.7) +
+  labs(
+    title = "Distribution of Census Tracts by % with Bachelor's Degree or Higher",
+    subtitle = "California, 2022 ACS 5-Year Estimates",
+    x = "Percent with Bachelor's or Higher",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+```
+
+
+
+This analysis uses data from the U.S. Census Bureau’s 2022 American Community Survey (ACS) 5-Year Estimates, specifically the percentage of the population aged 25 and over with a bachelor’s degree or higher at the census tract level across California. The ACS is an ongoing survey that provides vital demographic, social, economic, and housing information annually. The variable used here—DP02_0067P—is from the ACS Data Profile and reflects a pre-calculated percentage, making it ideal for high-level education attainment comparisons across geographies.
+
+Each census tract represents a small, relatively permanent statistical subdivision of a county, designed to contain between 1,200 and 8,000 people. This allows for highly localized analysis of educational attainment. The resulting map highlights regional patterns in higher education levels: urban areas like the San Francisco Bay Area, Los Angeles, and San Diego tend to exhibit significantly higher percentages of residents with bachelor's degrees or higher. In contrast, many rural and inland regions show lower levels of educational attainment. These geographic disparities often correlate with broader patterns in income, employment, access to higher education institutions, and historical inequities in resource distribution.

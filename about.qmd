@@ -2,4 +2,4 @@
 title: "About"
 ---
 
-About this site
+Data and code possible through David Kane's Data Science Bootcamp

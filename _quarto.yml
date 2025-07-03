@@ -6,8 +6,11 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: California
+      - href: washington_edu.qmd
+        text: Washington
+      - href: about.qmd
+        text: About
 
 format:
   html:
